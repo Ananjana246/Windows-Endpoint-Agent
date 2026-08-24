@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Agent.Diagnostics")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9cc22ed51eacd293861c8374cb05c869dbea9ce6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a1196bcdbf37473c5e68fb22a45c87b89be8e81")]
 [assembly: System.Reflection.AssemblyProductAttribute("Agent.Diagnostics")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Agent.Diagnostics")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
