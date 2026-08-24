@@ -1,0 +1,12 @@
+/Users/ananjanak/EndpointAgent/src/Agent.Core/bin/Debug/net8.0/Agent.Core.deps.json
+/Users/ananjanak/EndpointAgent/src/Agent.Core/bin/Debug/net8.0/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Core/bin/Debug/net8.0/Agent.Core.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.AssemblyInfoInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.AssemblyInfo.cs
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.csproj.CoreCompileInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.sourcelink.json
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/refint/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/Agent.Core.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Core/obj/Debug/net8.0/ref/Agent.Core.dll

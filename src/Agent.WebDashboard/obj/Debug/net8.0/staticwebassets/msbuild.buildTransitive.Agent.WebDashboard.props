@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/Agent.WebDashboard.props" />
+</Project>

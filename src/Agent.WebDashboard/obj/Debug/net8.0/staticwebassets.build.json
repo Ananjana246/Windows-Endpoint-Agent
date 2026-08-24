@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "jIdIYb5/QUzeqYnd0h4RD0oVHPajmet3aw2uj6jvsqE=",
+  "Source": "Agent.WebDashboard",
+  "BasePath": "_content/Agent.WebDashboard",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

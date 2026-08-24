@@ -1,0 +1,16 @@
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/bin/Debug/net8.0/Agent.Collectors.deps.json
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/bin/Debug/net8.0/Agent.Collectors.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/bin/Debug/net8.0/Agent.Collectors.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/bin/Debug/net8.0/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/bin/Debug/net8.0/Agent.Core.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.csproj.AssemblyReference.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.AssemblyInfoInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.AssemblyInfo.cs
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.csproj.CoreCompileInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.sourcelink.json
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Co.D2F6A746.Up2Date
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/refint/Agent.Collectors.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/Agent.Collectors.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Collectors/obj/Debug/net8.0/ref/Agent.Collectors.dll

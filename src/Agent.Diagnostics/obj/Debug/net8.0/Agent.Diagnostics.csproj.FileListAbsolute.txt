@@ -1,0 +1,16 @@
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/bin/Debug/net8.0/Agent.Diagnostics.deps.json
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/bin/Debug/net8.0/Agent.Diagnostics.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/bin/Debug/net8.0/Agent.Diagnostics.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/bin/Debug/net8.0/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/bin/Debug/net8.0/Agent.Core.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.csproj.AssemblyReference.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.AssemblyInfoInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.AssemblyInfo.cs
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.csproj.CoreCompileInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.sourcelink.json
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Di.2A2E33C3.Up2Date
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/refint/Agent.Diagnostics.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/Agent.Diagnostics.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Diagnostics/obj/Debug/net8.0/ref/Agent.Diagnostics.dll

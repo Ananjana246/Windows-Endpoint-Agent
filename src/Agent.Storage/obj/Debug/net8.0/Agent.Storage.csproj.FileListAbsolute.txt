@@ -1,0 +1,16 @@
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/bin/Debug/net8.0/Agent.Storage.deps.json
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/bin/Debug/net8.0/Agent.Storage.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/bin/Debug/net8.0/Agent.Storage.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/bin/Debug/net8.0/Agent.Core.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/bin/Debug/net8.0/Agent.Core.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.csproj.AssemblyReference.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.AssemblyInfoInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.AssemblyInfo.cs
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.csproj.CoreCompileInputs.cache
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.sourcelink.json
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.St.640DFE74.Up2Date
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/refint/Agent.Storage.dll
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/Agent.Storage.pdb
+/Users/ananjanak/EndpointAgent/src/Agent.Storage/obj/Debug/net8.0/ref/Agent.Storage.dll
