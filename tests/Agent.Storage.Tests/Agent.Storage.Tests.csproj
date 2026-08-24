@@ -20,4 +20,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Agent.Storage\Agent.Storage.csproj" />
+    <ProjectReference Include="..\..\src\Agent.Core\Agent.Core.csproj" />
+  </ItemGroup>
+
 </Project>
