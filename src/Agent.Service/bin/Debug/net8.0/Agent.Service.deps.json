@@ -9,6 +9,8 @@
       "Agent.Service/1.0.0": {
         "dependencies": {
           "Agent.Core": "1.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.Configuration.Json": "8.0.1",
           "Microsoft.Extensions.Hosting": "8.0.1"
         },
         "runtime": {
