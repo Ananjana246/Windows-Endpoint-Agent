@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Agent.WebDashboard")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95468b57eda22cca9c3c09a56d4099867e649de7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+708a4d7780888612cc99577904b2993ac613cf39")]
 [assembly: System.Reflection.AssemblyProductAttribute("Agent.WebDashboard")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Agent.WebDashboard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
