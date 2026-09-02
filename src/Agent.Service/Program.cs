@@ -1,26 +1,13 @@
-// using Agent.Core.Configuration;
-// using Agent.Service;
+using Agent.Service;
 
-// var builder = Host.CreateApplicationBuilder(args);
+var builder = Host.CreateApplicationBuilder(args);
 
-// builder.Services.Configure<AgentConfiguration>(
-//     builder.Configuration.GetSection("Agent"));
-
-// builder.Services.AddHostedService<Worker>();
-
-// var host = builder.Build();
-// host.Run();
-
-var builder = WebApplication.CreateBuilder(args);
-
-var app = builder.Build();
-
-app.MapGet("/", () => "Windows Endpoint Agent Dashboard");
-
-app.MapGet("/health", () => new
+builder.Services.AddWindowsService(options =>
 {
-    status = "Healthy",
-    timestamp = DateTimeOffset.Now
+    options.ServiceName = "Windows Endpoint Agent";
 });
 
-app.Run();
+builder.Services.AddHostedService<Worker>();
+
+var host = builder.Build();
+host.Run();
