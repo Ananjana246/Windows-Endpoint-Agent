@@ -1,6 +1,10 @@
-﻿namespace Agent.Collectors;
+﻿using Agent.Core.Models;
 
-public class Class1
+namespace Agent.Collectors;
+
+public interface ICollector
 {
-
+    Task<IEnumerable<AgentEvent>> CollectAsync(
+        CancellationToken cancellationToken = default);
 }
+
