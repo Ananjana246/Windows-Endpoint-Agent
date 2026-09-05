@@ -11,10 +11,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />                                                                                  
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Agent.Core\Agent.Core.csproj" />
+<ProjectReference Include="..\Agent.Collectors\Agent.Collectors.csproj" />
   </ItemGroup>
 </Project>

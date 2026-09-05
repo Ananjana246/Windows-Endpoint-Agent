@@ -650,6 +650,19 @@
           }
         }
       },
+      "Agent.Collectors/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Agent.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Agent.Collectors.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Agent.Collectors.dll": {}
+        }
+      },
       "Agent.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -1660,6 +1673,11 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Agent.Collectors/1.0.0": {
+      "type": "project",
+      "path": "../Agent.Collectors/Agent.Collectors.csproj",
+      "msbuildProject": "../Agent.Collectors/Agent.Collectors.csproj"
+    },
     "Agent.Core/1.0.0": {
       "type": "project",
       "path": "../Agent.Core/Agent.Core.csproj",
@@ -1668,6 +1686,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Agent.Collectors >= 1.0.0",
       "Agent.Core >= 1.0.0",
       "Microsoft.Extensions.Configuration.Binder >= 8.0.2",
       "Microsoft.Extensions.Configuration.Json >= 8.0.1",
@@ -1700,6 +1719,9 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
+            "/Users/ananjanak/EndpointAgent/src/Agent.Collectors/Agent.Collectors.csproj": {
+              "projectPath": "/Users/ananjanak/EndpointAgent/src/Agent.Collectors/Agent.Collectors.csproj"
+            },
             "/Users/ananjanak/EndpointAgent/src/Agent.Core/Agent.Core.csproj": {
               "projectPath": "/Users/ananjanak/EndpointAgent/src/Agent.Core/Agent.Core.csproj"
             }
