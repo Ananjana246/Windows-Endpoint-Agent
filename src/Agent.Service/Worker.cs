@@ -1,3 +1,4 @@
+using Agent.Collectors;
 using Agent.Core.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -7,13 +8,16 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly AgentConfiguration _configuration;
+    private readonly ICollector _collector;
 
     public Worker(
         ILogger<Worker> logger,
-        IOptions<AgentConfiguration> configuration)
+        IOptions<AgentConfiguration> configuration,
+        ICollector collector)
     {
         _logger = logger;
         _configuration = configuration.Value;
+        _collector = collector;
     }
 
     protected override async Task ExecuteAsync(
@@ -29,6 +33,16 @@ public class Worker : BackgroundService
             _logger.LogInformation(
                 "Worker running at: {time}",
                 DateTimeOffset.Now);
+
+            var events = await _collector.CollectAsync(stoppingToken);
+
+            foreach (var agentEvent in events)
+            {
+                _logger.LogInformation(
+                    "Collected event: {EventType} from {Source}",
+                    agentEvent.EventType,
+                    agentEvent.Source);
+            }
 
             await Task.Delay(
                 TimeSpan.FromSeconds(_configuration.CollectionIntervalSeconds),
