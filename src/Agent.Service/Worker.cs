@@ -31,7 +31,7 @@ public class Worker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation(
-                "Worker running at: {time}",
+                "Endpoint Agent worker running at: {time}",
                 DateTimeOffset.Now);
 
             var events = await _collector.CollectAsync(stoppingToken);
