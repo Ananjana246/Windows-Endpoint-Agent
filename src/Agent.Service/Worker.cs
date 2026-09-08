@@ -8,16 +8,16 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly AgentConfiguration _configuration;
-    private readonly ICollector _collector;
+    private readonly IEnumerable<ICollector> _collectors;
 
     public Worker(
         ILogger<Worker> logger,
         IOptions<AgentConfiguration> configuration,
-        ICollector collector)
+        IEnumerable<ICollector> collectors)
     {
         _logger = logger;
         _configuration = configuration.Value;
-        _collector = collector;
+        _collectors = collectors;
     }
 
     protected override async Task ExecuteAsync(
@@ -34,18 +34,32 @@ public class Worker : BackgroundService
                 "Endpoint Agent worker running at: {time}",
                 DateTimeOffset.Now);
 
-            var events = await _collector.CollectAsync(stoppingToken);
-
-            foreach (var agentEvent in events)
+            foreach (var collector in _collectors)
             {
-                _logger.LogInformation(
-                    "Collected event: {EventType} from {Source}",
-                    agentEvent.EventType,
-                    agentEvent.Source);
+                try
+                {
+                    var events = await collector.CollectAsync(stoppingToken);
+
+                    foreach (var agentEvent in events)
+                    {
+                        _logger.LogInformation(
+                            "Collected event: {EventType} from {Source}",
+                            agentEvent.EventType,
+                            agentEvent.Source);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error while running collector: {Collector}",
+                        collector.GetType().Name);
+                }
             }
 
             await Task.Delay(
-                TimeSpan.FromSeconds(_configuration.CollectionIntervalSeconds),
+                TimeSpan.FromSeconds(
+                    _configuration.CollectionIntervalSeconds),
                 stoppingToken);
         }
     }

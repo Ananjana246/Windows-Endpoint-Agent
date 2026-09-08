@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Agent.Storage.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+316bcc8c4a3287d81f390c4df6c200169a479758")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a95b09f8e3ff6b5515d5d9861eb94732c7be79f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Agent.Storage.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Agent.Storage.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
