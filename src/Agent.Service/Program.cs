@@ -11,6 +11,7 @@ builder.Services.AddWindowsService(options =>
 // Register the system information collector
 builder.Services.AddSingleton<ICollector, SystemInfoCollector>();
 builder.Services.AddSingleton<ICollector, ProcessCollector>();
+builder.Services.AddSingleton<ICollector, FileCollector>();
 // Register the background worker
 builder.Services.AddHostedService<Worker>();
 
