@@ -6,6 +6,7 @@ public enum EventType
     AgentStopped,
     AgentError,
     SystemInfo,
+    
     UserLogin,
     UserLogout,
     WorkstationLock,

@@ -6,10 +6,13 @@ namespace Agent.Collectors;
 
 public class FileCollector : ICollector
 {
+    private readonly Dictionary<string, FileState> _previousFiles = new();
+
     public Task<IEnumerable<AgentEvent>> CollectAsync(
         CancellationToken cancellationToken = default)
     {
         var events = new List<AgentEvent>();
+        var currentFiles = new Dictionary<string, FileState>();
 
         var folders = new[]
         {
@@ -35,41 +38,112 @@ public class FileCollector : ICollector
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var fileInfo = new FileInfo(file);
-
-                    var fileData = new
+                    try
                     {
-                        FileName = fileInfo.Name,
-                        FilePath = fileInfo.FullName,
-                        Extension = fileInfo.Extension,
-                        Size = fileInfo.Length,
-                        LastModifiedUtc = fileInfo.LastWriteTimeUtc
-                    };
+                        var fileInfo = new FileInfo(file);
 
-                    var agentEvent = new AgentEvent
+                        var state = new FileState(
+                            fileInfo.Length,
+                            fileInfo.LastWriteTimeUtc);
+
+                        currentFiles[fileInfo.FullName] = state;
+
+                        // New file
+                        if (!_previousFiles.ContainsKey(fileInfo.FullName))
+                        {
+                            events.Add(CreateEvent(
+                                EventType.FileCreated,
+                                fileInfo));
+                        }
+                        // Existing file changed
+                        else if (_previousFiles[fileInfo.FullName] != state)
+                        {
+                            events.Add(CreateEvent(
+                                EventType.FileModified,
+                                fileInfo));
+                        }
+                    }
+                    catch (UnauthorizedAccessException)
                     {
-                        EventId = Guid.NewGuid(),
-                        TimestampUtc = DateTime.UtcNow,
-                        DeviceId = Environment.MachineName,
-                        UserId = Environment.UserName,
-                        EventType = EventType.FileModified,
-                        Source = "FileCollector",
-                        Data = JsonSerializer.Serialize(fileData)
-                    };
-
-                    events.Add(agentEvent);
+                        // Skip inaccessible files.
+                    }
+                    catch (IOException)
+                    {
+                        // Skip files that become unavailable.
+                    }
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                // Skip folders/files that cannot be accessed.
+                // Skip inaccessible folders.
             }
             catch (IOException)
             {
-                // Skip files that become unavailable during collection.
+                // Skip folders that become unavailable.
             }
+        }
+
+        // Detect deleted files
+        foreach (var previousFile in _previousFiles)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (!currentFiles.ContainsKey(previousFile.Key))
+            {
+                var fileData = new
+                {
+                    FilePath = previousFile.Key
+                };
+
+                events.Add(new AgentEvent
+                {
+                    EventId = Guid.NewGuid(),
+                    TimestampUtc = DateTime.UtcNow,
+                    DeviceId = Environment.MachineName,
+                    UserId = Environment.UserName,
+                    EventType = EventType.FileDeleted,
+                    Source = "FileCollector",
+                    Data = JsonSerializer.Serialize(fileData)
+                });
+            }
+        }
+
+        _previousFiles.Clear();
+
+        foreach (var file in currentFiles)
+        {
+            _previousFiles[file.Key] = file.Value;
         }
 
         return Task.FromResult<IEnumerable<AgentEvent>>(events);
     }
+
+    private static AgentEvent CreateEvent(
+        EventType eventType,
+        FileInfo fileInfo)
+    {
+        var fileData = new
+        {
+            FileName = fileInfo.Name,
+            FilePath = fileInfo.FullName,
+            Extension = fileInfo.Extension,
+            Size = fileInfo.Length,
+            LastModifiedUtc = fileInfo.LastWriteTimeUtc
+        };
+
+        return new AgentEvent
+        {
+            EventId = Guid.NewGuid(),
+            TimestampUtc = DateTime.UtcNow,
+            DeviceId = Environment.MachineName,
+            UserId = Environment.UserName,
+            EventType = eventType,
+            Source = "FileCollector",
+            Data = JsonSerializer.Serialize(fileData)
+        };
+    }
+
+    private readonly record struct FileState(
+        long Size,
+        DateTime LastModifiedUtc);
 }

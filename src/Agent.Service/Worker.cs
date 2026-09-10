@@ -1,6 +1,8 @@
 using Agent.Collectors;
 using Agent.Core.Configuration;
+using Agent.Core.Services;
 using Microsoft.Extensions.Options;
+using Agent.Storage.Repositories;
 
 namespace Agent.Service;
 
@@ -9,15 +11,23 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly AgentConfiguration _configuration;
     private readonly IEnumerable<ICollector> _collectors;
+    private readonly EventNormalizer _normalizer;
+    private readonly EventRepository _eventRepository;
+
+    private readonly Dictionary<string, DateTime> _seenEvents = new();
 
     public Worker(
         ILogger<Worker> logger,
         IOptions<AgentConfiguration> configuration,
-        IEnumerable<ICollector> collectors)
+        IEnumerable<ICollector> collectors,
+        EventNormalizer normalizer,
+        EventRepository eventRepository)
     {
         _logger = logger;
         _configuration = configuration.Value;
         _collectors = collectors;
+        _normalizer = normalizer;
+        _eventRepository = eventRepository;
     }
 
     protected override async Task ExecuteAsync(
@@ -42,10 +52,37 @@ public class Worker : BackgroundService
 
                     foreach (var agentEvent in events)
                     {
+                        var normalizedEvent =
+                            _normalizer.Normalize(agentEvent);
+
+                        var deduplicationKey =
+                            _normalizer.CreateDeduplicationKey(
+                                normalizedEvent);
+
+                        var now = DateTime.UtcNow;
+
+                        if (_seenEvents.TryGetValue(
+                                deduplicationKey,
+                                out var previousTime))
+                        {
+                            if ((now - previousTime).TotalSeconds < 60)
+                            {
+                                _logger.LogDebug(
+                                    "Duplicate event ignored: {EventType} from {Source}",
+                                    normalizedEvent.EventType,
+                                    normalizedEvent.Source);
+
+                                continue;
+                            }
+                        }
+
+                        _seenEvents[deduplicationKey] = now;
+                        _eventRepository.Save(normalizedEvent);
+
                         _logger.LogInformation(
-                            "Collected event: {EventType} from {Source}",
-                            agentEvent.EventType,
-                            agentEvent.Source);
+                            "Saved event: {EventType} from {Source}",
+                            normalizedEvent.EventType,
+                            normalizedEvent.Source);
                     }
                 }
                 catch (Exception ex)

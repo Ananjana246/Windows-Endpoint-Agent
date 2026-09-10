@@ -1,5 +1,8 @@
 using Agent.Collectors;
+using Agent.Core.Services;
 using Agent.Service;
+using Agent.Storage.Data;
+using Agent.Storage.Repositories;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -12,9 +15,21 @@ builder.Services.AddWindowsService(options =>
 builder.Services.AddSingleton<ICollector, SystemInfoCollector>();
 builder.Services.AddSingleton<ICollector, ProcessCollector>();
 builder.Services.AddSingleton<ICollector, FileCollector>();
+builder.Services.AddSingleton<EventNormalizer>();
+// Register SQLite storage
+builder.Services.AddSingleton<Database>(sp =>
+{
+    var configuration = sp.GetRequiredService<
+        Microsoft.Extensions.Options.IOptions<Agent.Core.Configuration.AgentConfiguration>>();
+    return new Database(configuration.Value.DatabasePath);
+});
+builder.Services.AddSingleton<DatabaseInitializer>();
+builder.Services.AddSingleton<EventRepository>();
 // Register the background worker
 builder.Services.AddHostedService<Worker>();
-
 var host = builder.Build();
-
+// Initialize the SQLite database
+var databaseInitializer =
+    host.Services.GetRequiredService<DatabaseInitializer>();
+databaseInitializer.Initialize();
 host.Run();
