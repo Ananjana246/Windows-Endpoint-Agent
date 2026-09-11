@@ -3,6 +3,7 @@ using Agent.Core.Configuration;
 using Agent.Core.Services;
 using Microsoft.Extensions.Options;
 using Agent.Storage.Repositories;
+using Agent.Core.Enums;
 
 namespace Agent.Service;
 
@@ -79,10 +80,14 @@ public class Worker : BackgroundService
                         _seenEvents[deduplicationKey] = now;
                         _eventRepository.Save(normalizedEvent);
 
-                        _logger.LogInformation(
-                            "Saved event: {EventType} from {Source}",
-                            normalizedEvent.EventType,
-                            normalizedEvent.Source);
+_eventRepository.UpdateStatus(
+    normalizedEvent.EventId,
+    DeliveryStatus.Ready);
+
+_logger.LogInformation(
+    "Saved event: {EventType} from {Source} with status READY",
+    normalizedEvent.EventType,
+    normalizedEvent.Source);
                     }
                 }
                 catch (Exception ex)
