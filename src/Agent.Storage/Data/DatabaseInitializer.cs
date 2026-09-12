@@ -31,6 +31,23 @@ public class DatabaseInitializer
                 data TEXT NOT NULL,
                 delivery_status TEXT NOT NULL
             );
+
+            CREATE TABLE IF NOT EXISTS diagnostics
+            (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                last_collection_utc TEXT
+            );
+
+            INSERT OR IGNORE INTO diagnostics
+            (
+                id,
+                last_collection_utc
+            )
+            VALUES
+            (
+                1,
+                NULL
+            );
             """;
 
         command.ExecuteNonQuery();

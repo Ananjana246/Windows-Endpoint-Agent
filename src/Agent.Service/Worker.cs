@@ -4,6 +4,7 @@ using Agent.Core.Services;
 using Microsoft.Extensions.Options;
 using Agent.Storage.Repositories;
 using Agent.Core.Enums;
+using Agent.Diagnostics;
 
 namespace Agent.Service;
 
@@ -14,7 +15,9 @@ public class Worker : BackgroundService
     private readonly IEnumerable<ICollector> _collectors;
     private readonly EventNormalizer _normalizer;
     private readonly EventRepository _eventRepository;
-    private readonly EventQueueProcessor _queueProcessor;private readonly DeviceIdentityService _deviceIdentityService;
+    private readonly EventQueueProcessor _queueProcessor;
+    private readonly DeviceIdentityService _deviceIdentityService;
+    private readonly DiagnosticsRepository _diagnosticsRepository;
     
 
     private readonly Dictionary<string, DateTime> _seenEvents = new();
@@ -26,7 +29,8 @@ public class Worker : BackgroundService
         EventNormalizer normalizer,
         EventRepository eventRepository,
         EventQueueProcessor queueProcessor,
-        DeviceIdentityService deviceIdentityService)
+        DeviceIdentityService deviceIdentityService,
+        DiagnosticsRepository diagnosticsRepository)
     {
         _logger = logger;
         _configuration = configuration.Value;
@@ -35,6 +39,7 @@ public class Worker : BackgroundService
         _eventRepository = eventRepository;   
         _queueProcessor = queueProcessor;
         _deviceIdentityService = deviceIdentityService;
+        _diagnosticsRepository = diagnosticsRepository;
     }
 
     protected override async Task ExecuteAsync(
@@ -112,6 +117,10 @@ _logger.LogInformation(
                         collector.GetType().Name);
                 }
             }
+
+
+
+            _diagnosticsRepository.UpdateLastCollection(DateTime.UtcNow);
 
             await Task.Delay(
                 TimeSpan.FromSeconds(
