@@ -25,6 +25,17 @@ builder.Services.AddSingleton<Database>(sp =>
 });
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<EventRepository>();
+builder.Services.AddSingleton<IEventQueue>(
+    sp => sp.GetRequiredService<EventRepository>());
+builder.Services.AddSingleton<EventQueueProcessor>();
+builder.Services.AddSingleton<DeviceIdentityService>(sp =>
+{
+    var identityPath = Path.Combine(
+        AppContext.BaseDirectory,
+        "device.id");
+
+    return new DeviceIdentityService(identityPath);
+});
 // Register the background worker
 builder.Services.AddHostedService<Worker>();
 var host = builder.Build();

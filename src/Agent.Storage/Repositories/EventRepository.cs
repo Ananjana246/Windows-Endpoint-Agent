@@ -1,10 +1,12 @@
 using Agent.Core.Enums;
 using Agent.Core.Models;
 using Agent.Storage.Data;
+using Agent.Core.Services;
+
 
 namespace Agent.Storage.Repositories;
 
-public class EventRepository
+public class EventRepository : IEventQueue
 {
     private readonly Database _database;
 

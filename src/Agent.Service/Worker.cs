@@ -14,6 +14,8 @@ public class Worker : BackgroundService
     private readonly IEnumerable<ICollector> _collectors;
     private readonly EventNormalizer _normalizer;
     private readonly EventRepository _eventRepository;
+    private readonly EventQueueProcessor _queueProcessor;private readonly DeviceIdentityService _deviceIdentityService;
+    
 
     private readonly Dictionary<string, DateTime> _seenEvents = new();
 
@@ -22,13 +24,17 @@ public class Worker : BackgroundService
         IOptions<AgentConfiguration> configuration,
         IEnumerable<ICollector> collectors,
         EventNormalizer normalizer,
-        EventRepository eventRepository)
+        EventRepository eventRepository,
+        EventQueueProcessor queueProcessor,
+        DeviceIdentityService deviceIdentityService)
     {
         _logger = logger;
         _configuration = configuration.Value;
         _collectors = collectors;
         _normalizer = normalizer;
-        _eventRepository = eventRepository;
+        _eventRepository = eventRepository;   
+        _queueProcessor = queueProcessor;
+        _deviceIdentityService = deviceIdentityService;
     }
 
     protected override async Task ExecuteAsync(
@@ -38,6 +44,13 @@ public class Worker : BackgroundService
             "Agent configuration loaded. Database: {DatabasePath}, Collection interval: {Interval} seconds",
             _configuration.DatabasePath,
             _configuration.CollectionIntervalSeconds);
+        var deviceId = _deviceIdentityService.GetDeviceId();
+
+        _logger.LogInformation(
+            "Endpoint Device ID: {DeviceId}",
+            deviceId);
+
+        _queueProcessor.PrepareLocalEvents();
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -55,6 +68,7 @@ public class Worker : BackgroundService
                     {
                         var normalizedEvent =
                             _normalizer.Normalize(agentEvent);
+                        normalizedEvent.DeviceId = deviceId;
 
                         var deduplicationKey =
                             _normalizer.CreateDeduplicationKey(
