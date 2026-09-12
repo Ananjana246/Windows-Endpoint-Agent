@@ -7,6 +7,7 @@ namespace Agent.Collectors;
 public class FileCollector : ICollector
 {
     private readonly Dictionary<string, FileState> _previousFiles = new();
+    private bool _hasInitialSnapshot;
 
     public Task<IEnumerable<AgentEvent>> CollectAsync(
         CancellationToken cancellationToken = default)
@@ -17,8 +18,7 @@ public class FileCollector : ICollector
         var folders = new[]
         {
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
         };
 
         foreach (var folder in folders.Distinct())
@@ -48,14 +48,12 @@ public class FileCollector : ICollector
 
                         currentFiles[fileInfo.FullName] = state;
 
-                        // New file
                         if (!_previousFiles.ContainsKey(fileInfo.FullName))
                         {
                             events.Add(CreateEvent(
                                 EventType.FileCreated,
                                 fileInfo));
                         }
-                        // Existing file changed
                         else if (_previousFiles[fileInfo.FullName] != state)
                         {
                             events.Add(CreateEvent(
@@ -65,25 +63,36 @@ public class FileCollector : ICollector
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        // Skip inaccessible files.
                     }
                     catch (IOException)
                     {
-                        // Skip files that become unavailable.
                     }
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                // Skip inaccessible folders.
             }
             catch (IOException)
             {
-                // Skip folders that become unavailable.
             }
         }
 
-        // Detect deleted files
+        // First scan establishes the baseline.
+        // Existing files should not be reported as newly created.
+        if (!_hasInitialSnapshot)
+        {
+            _previousFiles.Clear();
+
+            foreach (var file in currentFiles)
+            {
+                _previousFiles[file.Key] = file.Value;
+            }
+
+            _hasInitialSnapshot = true;
+
+            return Task.FromResult<IEnumerable<AgentEvent>>(new List<AgentEvent>());
+        }
+
         foreach (var previousFile in _previousFiles)
         {
             cancellationToken.ThrowIfCancellationRequested();

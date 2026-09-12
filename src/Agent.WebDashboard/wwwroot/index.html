@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Endpoint Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .device {
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .updated {
+            margin-top: 25px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Windows Endpoint Agent</h1>
+
+    <div>
+        Agent Status:
+        <span id="status" class="status">Loading...</span>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="label">Device ID</div>
+            <div id="deviceId" class="value device">Loading...</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Total Events</div>
+            <div id="totalEvents" class="value">-</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Ready Events</div>
+            <div id="readyEvents" class="value">-</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Collectors</div>
+            <div id="collectorCount" class="value">-</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Database</div>
+            <div id="databaseHealthy" class="value">-</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Last Collection</div>
+            <div id="lastCollection" class="value device">-</div>
+        </div>
+    </div>
+
+    <div class="updated">
+        Last dashboard refresh: <span id="refreshTime">-</span>
+    </div>
+
+    <script>
+        async function loadHealth() {
+            try {
+                const response = await fetch('/health');
+                const health = await response.json();
+
+                document.getElementById('status').textContent =
+                    health.status;
+
+                document.getElementById('deviceId').textContent =
+                    health.deviceId;
+
+                document.getElementById('totalEvents').textContent =
+                    health.totalEvents;
+
+                document.getElementById('readyEvents').textContent =
+                    health.readyEvents;
+
+                document.getElementById('collectorCount').textContent =
+                    health.collectorCount;
+
+                document.getElementById('databaseHealthy').textContent =
+                    health.databaseHealthy ? 'Healthy' : 'Unhealthy';
+
+                document.getElementById('lastCollection').textContent =
+                    health.lastCollectionUtc ===
+                    '0001-01-01T00:00:00'
+                        ? 'Not available'
+                        : new Date(
+                            health.lastCollectionUtc
+                          ).toLocaleString();
+
+                document.getElementById('refreshTime').textContent =
+                    new Date().toLocaleString();
+            }
+            catch (error) {
+                document.getElementById('status').textContent =
+                    'OFFLINE';
+
+                console.error(error);
+            }
+        }
+
+        loadHealth();
+
+        setInterval(loadHealth, 5000);
+    </script>
+
+</body>
+</html>

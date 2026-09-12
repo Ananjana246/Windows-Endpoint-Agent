@@ -40,13 +40,25 @@ builder.Services.AddSingleton<HealthService>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Windows Endpoint Agent Dashboard");
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapGet("/health", (HealthService healthService) =>
 {
     var health = healthService.GetHealth();
 
     return Results.Ok(health);
+});
+
+app.MapGet("/events", (EventRepository eventRepository) =>
+{
+    var events = eventRepository
+        .GetAll()
+        .OrderByDescending(e => e.TimestampUtc)
+        .Take(50)
+        .ToList();
+
+    return Results.Ok(events);
 });
 
 app.Run();

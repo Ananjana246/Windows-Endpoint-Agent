@@ -8,6 +8,7 @@ namespace Agent.Collectors;
 public class ProcessCollector : ICollector
 {
     private readonly Dictionary<int, ProcessState> _previousProcesses = new();
+    private bool _hasInitialSnapshot;
 
     public Task<IEnumerable<AgentEvent>> CollectAsync(
         CancellationToken cancellationToken = default)
@@ -26,7 +27,8 @@ public class ProcessCollector : ICollector
                 currentProcesses[process.Id] = processState;
 
                 // New process detected
-                if (!_previousProcesses.ContainsKey(process.Id))
+                if (_hasInitialSnapshot &&
+                    !_previousProcesses.ContainsKey(process.Id))
                 {
                     events.Add(CreateProcessEvent(
                         EventType.ProcessStarted,
@@ -44,9 +46,28 @@ public class ProcessCollector : ICollector
             }
         }
 
+        // First scan establishes the baseline.
+        // Existing processes should not be reported as newly started.
+        if (!_hasInitialSnapshot)
+        {
+            _previousProcesses.Clear();
+
+            foreach (var process in currentProcesses)
+            {
+                _previousProcesses[process.Key] = process.Value;
+            }
+
+            _hasInitialSnapshot = true;
+
+            return Task.FromResult<IEnumerable<AgentEvent>>(
+                new List<AgentEvent>());
+        }
+
         // Processes that disappeared
         foreach (var previousProcess in _previousProcesses)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (!currentProcesses.ContainsKey(previousProcess.Key))
             {
                 events.Add(CreateProcessEvent(
