@@ -48,13 +48,18 @@ public class FileCollector : ICollector
 
                         currentFiles[fileInfo.FullName] = state;
 
-                        if (!_previousFiles.ContainsKey(fileInfo.FullName))
+                        if (_hasInitialSnapshot &&
+                            !_previousFiles.ContainsKey(fileInfo.FullName))
                         {
                             events.Add(CreateEvent(
                                 EventType.FileCreated,
                                 fileInfo));
                         }
-                        else if (_previousFiles[fileInfo.FullName] != state)
+                        else if (_hasInitialSnapshot &&
+                                 _previousFiles.TryGetValue(
+                                     fileInfo.FullName,
+                                     out var previousState) &&
+                                 previousState != state)
                         {
                             events.Add(CreateEvent(
                                 EventType.FileModified,
@@ -78,7 +83,6 @@ public class FileCollector : ICollector
         }
 
         // First scan establishes the baseline.
-        // Existing files should not be reported as newly created.
         if (!_hasInitialSnapshot)
         {
             _previousFiles.Clear();
@@ -90,18 +94,35 @@ public class FileCollector : ICollector
 
             _hasInitialSnapshot = true;
 
-            return Task.FromResult<IEnumerable<AgentEvent>>(new List<AgentEvent>());
+            return Task.FromResult<IEnumerable<AgentEvent>>(
+                new List<AgentEvent>());
         }
 
-        foreach (var previousFile in _previousFiles)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+        var deletedFiles = _previousFiles
+            .Where(previous => !currentFiles.ContainsKey(previous.Key))
+            .ToList();
 
-            if (!currentFiles.ContainsKey(previousFile.Key))
+        var createdFiles = currentFiles
+            .Where(current => !_previousFiles.ContainsKey(current.Key))
+            .ToList();
+
+        // Try to identify renames by matching file size and last-write time.
+        var matchedCreatedFiles = new HashSet<string>();
+        var matchedDeletedFiles = new HashSet<string>();
+
+        foreach (var deletedFile in deletedFiles)
+        {
+            var matchingCreatedFile = createdFiles.FirstOrDefault(
+                created =>
+                    !matchedCreatedFiles.Contains(created.Key) &&
+                    created.Value == deletedFile.Value);
+
+            if (!string.IsNullOrEmpty(matchingCreatedFile.Key))
             {
-                var fileData = new
+                var renameData = new
                 {
-                    FilePath = previousFile.Key
+                    OldPath = deletedFile.Key,
+                    NewPath = matchingCreatedFile.Key
                 };
 
                 events.Add(new AgentEvent
@@ -110,11 +131,54 @@ public class FileCollector : ICollector
                     TimestampUtc = DateTime.UtcNow,
                     DeviceId = Environment.MachineName,
                     UserId = Environment.UserName,
-                    EventType = EventType.FileDeleted,
+                    EventType = EventType.FileRenamed,
                     Source = "FileCollector",
-                    Data = JsonSerializer.Serialize(fileData)
+                    Data = JsonSerializer.Serialize(renameData)
                 });
+
+                matchedDeletedFiles.Add(deletedFile.Key);
+                matchedCreatedFiles.Add(matchingCreatedFile.Key);
             }
+        }
+
+        // Remaining newly created files.
+        foreach (var createdFile in createdFiles)
+        {
+            if (matchedCreatedFiles.Contains(createdFile.Key))
+            {
+                continue;
+            }
+
+            var fileInfo = new FileInfo(createdFile.Key);
+
+            events.Add(CreateEvent(
+                EventType.FileCreated,
+                fileInfo));
+        }
+
+        // Remaining deleted files.
+        foreach (var deletedFile in deletedFiles)
+        {
+            if (matchedDeletedFiles.Contains(deletedFile.Key))
+            {
+                continue;
+            }
+
+            var fileData = new
+            {
+                FilePath = deletedFile.Key
+            };
+
+            events.Add(new AgentEvent
+            {
+                EventId = Guid.NewGuid(),
+                TimestampUtc = DateTime.UtcNow,
+                DeviceId = Environment.MachineName,
+                UserId = Environment.UserName,
+                EventType = EventType.FileDeleted,
+                Source = "FileCollector",
+                Data = JsonSerializer.Serialize(fileData)
+            });
         }
 
         _previousFiles.Clear();
