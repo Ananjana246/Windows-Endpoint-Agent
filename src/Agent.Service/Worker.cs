@@ -49,6 +49,8 @@ public class Worker : BackgroundService
             "Agent configuration loaded. Database: {DatabasePath}, Collection interval: {Interval} seconds",
             _configuration.DatabasePath,
             _configuration.CollectionIntervalSeconds);
+        _logger.LogInformation("Collector configuration: SystemInfo={SystemInfo}, Process={Process}, File={File}", _configuration.Collectors.SystemInfo, _configuration.Collectors.Process, _configuration.Collectors.File);
+
         var deviceId = _deviceIdentityService.GetDeviceId();
 
         _logger.LogInformation(
@@ -65,6 +67,12 @@ public class Worker : BackgroundService
 
             foreach (var collector in _collectors)
             {
+                if (!IsCollectorEnabled(collector))
+                {
+                    _logger.LogInformation("Collector disabled by configuration: {Collector}", collector.GetType().Name);
+                    continue;
+                }
+
                 try
                 {
                     var events = await collector.CollectAsync(stoppingToken);
@@ -128,4 +136,16 @@ _logger.LogInformation(
                 stoppingToken);
         }
     }
-}
+
+    private bool IsCollectorEnabled(ICollector collector)
+    {
+        return collector switch
+        {
+            SystemInfoCollector => _configuration.Collectors.SystemInfo,
+            ProcessCollector => _configuration.Collectors.Process,
+            FileCollector => _configuration.Collectors.File,
+            _ => true
+        };
+    }
+
+    }

@@ -6,6 +6,8 @@ using Agent.Storage.Repositories;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Services.Configure<Agent.Core.Configuration.AgentConfiguration>(builder.Configuration.GetSection("Agent"));
+
 builder.Services.AddWindowsService(options =>
 {
     options.ServiceName = "Windows Endpoint Agent";

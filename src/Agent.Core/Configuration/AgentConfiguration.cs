@@ -7,4 +7,6 @@ public class AgentConfiguration
     public int CollectionIntervalSeconds { get; set; } = 30;
 
     public string LogLevel { get; set; } = "Information";
+
+    public CollectorConfiguration Collectors { get; set; } = new();
 }
