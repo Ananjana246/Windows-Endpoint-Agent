@@ -31,6 +31,7 @@ builder.Services.AddSingleton<IEventQueue>(
     sp => sp.GetRequiredService<EventRepository>());
 builder.Services.AddSingleton<DiagnosticsRepository>();
 builder.Services.AddSingleton<EventQueueProcessor>();
+builder.Services.AddSingleton<Agent.Diagnostics.CollectorHealthService>();
 builder.Services.AddSingleton<Agent.Diagnostics.HealthService>();
 builder.Services.AddSingleton<DeviceIdentityService>(sp =>
 {

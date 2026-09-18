@@ -15,4 +15,6 @@ public class HealthStatus
     public int CollectorCount { get; set; }
 
     public bool DatabaseHealthy { get; set; }
+
+    public List<CollectorHealth> Collectors { get; set; } = new();
 }

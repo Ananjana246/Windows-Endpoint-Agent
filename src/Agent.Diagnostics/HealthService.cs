@@ -9,15 +9,18 @@ public class HealthService
     private readonly DeviceIdentityService _deviceIdentityService;
     private readonly EventRepository _eventRepository;
     private readonly DiagnosticsRepository _diagnosticsRepository;
+    private readonly CollectorHealthService _collectorHealthService;
 
     public HealthService(
         DeviceIdentityService deviceIdentityService,
         EventRepository eventRepository,
-        DiagnosticsRepository diagnosticsRepository)
+        DiagnosticsRepository diagnosticsRepository,
+        CollectorHealthService collectorHealthService)
     {
         _deviceIdentityService = deviceIdentityService;
         _eventRepository = eventRepository;
         _diagnosticsRepository = diagnosticsRepository;
+        _collectorHealthService = collectorHealthService;
     }
 
     public HealthStatus GetHealth()
@@ -41,8 +44,9 @@ public class HealthService
             ReadyEvents = readyEvents.Count,
             LastCollectionUtc =
                 lastCollection ?? DateTime.MinValue,
-            CollectorCount = 4,
-            DatabaseHealthy = true
+            CollectorCount = _collectorHealthService.GetAll().Count,
+            DatabaseHealthy = true,
+              Collectors = _collectorHealthService.GetAll()
         };
     }
 }

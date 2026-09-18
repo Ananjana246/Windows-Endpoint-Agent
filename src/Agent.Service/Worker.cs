@@ -18,6 +18,7 @@ public class Worker : BackgroundService
     private readonly EventQueueProcessor _queueProcessor;
     private readonly DeviceIdentityService _deviceIdentityService;
     private readonly DiagnosticsRepository _diagnosticsRepository;
+    private readonly CollectorHealthService _collectorHealthService;
     
 
     private readonly Dictionary<string, DateTime> _seenEvents = new();
@@ -30,7 +31,8 @@ public class Worker : BackgroundService
         EventRepository eventRepository,
         EventQueueProcessor queueProcessor,
         DeviceIdentityService deviceIdentityService,
-        DiagnosticsRepository diagnosticsRepository)
+        DiagnosticsRepository diagnosticsRepository,
+        CollectorHealthService collectorHealthService)
     {
         _logger = logger;
         _configuration = configuration.Value;
@@ -40,6 +42,7 @@ public class Worker : BackgroundService
         _queueProcessor = queueProcessor;
         _deviceIdentityService = deviceIdentityService;
         _diagnosticsRepository = diagnosticsRepository;
+        _collectorHealthService = collectorHealthService;
     }
 
     protected override async Task ExecuteAsync(
@@ -70,12 +73,14 @@ public class Worker : BackgroundService
                 if (!IsCollectorEnabled(collector))
                 {
                     _logger.LogInformation("Collector disabled by configuration: {Collector}", collector.GetType().Name);
+                    _collectorHealthService.MarkDisabled(collector.GetType().Name);
                     continue;
                 }
 
                 try
                 {
                     var events = await collector.CollectAsync(stoppingToken);
+                    _collectorHealthService.MarkSuccess(collector.GetType().Name);
 
                     foreach (var agentEvent in events)
                     {
@@ -123,6 +128,7 @@ _logger.LogInformation(
                         ex,
                         "Error while running collector: {Collector}",
                         collector.GetType().Name);
+                    _collectorHealthService.MarkFailure(collector.GetType().Name);
                 }
             }
 
