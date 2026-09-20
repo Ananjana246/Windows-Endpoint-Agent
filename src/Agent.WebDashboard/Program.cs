@@ -37,6 +37,7 @@ builder.Services.AddSingleton<EventRepository>();
 builder.Services.AddSingleton<DiagnosticsRepository>();
 
 builder.Services.AddSingleton<CollectorHealthService>();
+builder.Services.AddSingleton<CollectorHealthRepository>();
 builder.Services.AddSingleton<HealthService>();
 
 var app = builder.Build();

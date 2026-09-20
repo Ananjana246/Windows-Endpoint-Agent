@@ -38,6 +38,14 @@ public class DatabaseInitializer
                 last_collection_utc TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS collector_health
+            (
+                name TEXT PRIMARY KEY,
+                enabled INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                last_success_utc TEXT
+            );
+
             INSERT OR IGNORE INTO diagnostics
             (
                 id,

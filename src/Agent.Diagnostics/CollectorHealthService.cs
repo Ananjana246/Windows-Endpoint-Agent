@@ -1,52 +1,55 @@
 using Agent.Core.Models;
+using Agent.Storage.Repositories;
 
 namespace Agent.Diagnostics;
 
 public class CollectorHealthService
 {
-    private readonly Dictionary<string, CollectorHealth> _health = new();
+    private readonly CollectorHealthRepository _repository;
+
+    public CollectorHealthService(CollectorHealthRepository repository)
+    {
+        _repository = repository;
+    }
 
     public void MarkSuccess(string collectorName)
     {
-        _health[collectorName] = new CollectorHealth
+        _repository.Upsert(new CollectorHealth
         {
             Name = collectorName,
             Enabled = true,
             Status = "RUNNING",
             LastSuccessUtc = DateTime.UtcNow
-        };
+        });
     }
 
     public void MarkFailure(string collectorName)
     {
-        if (!_health.TryGetValue(collectorName, out var health))
-        {
-            health = new CollectorHealth
-            {
-                Name = collectorName,
-                Enabled = true
-            };
-        }
+        var existing = _repository.GetAll()
+            .FirstOrDefault(x => x.Name == collectorName);
 
-        health.Status = "FAILED";
-        _health[collectorName] = health;
+        _repository.Upsert(new CollectorHealth
+        {
+            Name = collectorName,
+            Enabled = true,
+            Status = "FAILED",
+            LastSuccessUtc = existing?.LastSuccessUtc
+        });
     }
 
     public void MarkDisabled(string collectorName)
     {
-        _health[collectorName] = new CollectorHealth
+        _repository.Upsert(new CollectorHealth
         {
             Name = collectorName,
             Enabled = false,
             Status = "DISABLED",
             LastSuccessUtc = null
-        };
+        });
     }
 
     public List<CollectorHealth> GetAll()
     {
-        return _health.Values
-            .OrderBy(x => x.Name)
-            .ToList();
+        return _repository.GetAll();
     }
 }
