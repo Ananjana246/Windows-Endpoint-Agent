@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Storage.Tests", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.IntegrationTests", "tests\Agent.IntegrationTests\Agent.IntegrationTests.csproj", "{8196C15C-4EE3-4EFE-9C21-97297811761F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Diagnostics.Tests", "tests\Agent.Diagnostics.Tests\Agent.Diagnostics.Tests.csproj", "{3D881850-9D58-4018-AC26-30F9207DB6D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{8196C15C-4EE3-4EFE-9C21-97297811761F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8196C15C-4EE3-4EFE-9C21-97297811761F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8196C15C-4EE3-4EFE-9C21-97297811761F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D881850-9D58-4018-AC26-30F9207DB6D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D881850-9D58-4018-AC26-30F9207DB6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D881850-9D58-4018-AC26-30F9207DB6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D881850-9D58-4018-AC26-30F9207DB6D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{70121C4B-543D-4A6A-A53F-05A50C62AF1A} = {364812C9-97D3-45BD-A529-795049B7E154}
@@ -88,5 +94,6 @@ Global
 		{908AED20-3AF0-4F41-8D69-7BF5235BF09B} = {3348D8DC-D4A7-436C-A14F-A4C5DFCCC71C}
 		{A2710DAA-30F5-44E4-80B4-020B7F490DDE} = {3348D8DC-D4A7-436C-A14F-A4C5DFCCC71C}
 		{8196C15C-4EE3-4EFE-9C21-97297811761F} = {3348D8DC-D4A7-436C-A14F-A4C5DFCCC71C}
+		{3D881850-9D58-4018-AC26-30F9207DB6D1} = {3348D8DC-D4A7-436C-A14F-A4C5DFCCC71C}
 	EndGlobalSection
 EndGlobal
