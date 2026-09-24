@@ -10,17 +10,20 @@ public class HealthService
     private readonly EventRepository _eventRepository;
     private readonly DiagnosticsRepository _diagnosticsRepository;
     private readonly CollectorHealthService _collectorHealthService;
+    private readonly Agent.Storage.Data.Database _database;
 
     public HealthService(
         DeviceIdentityService deviceIdentityService,
         EventRepository eventRepository,
         DiagnosticsRepository diagnosticsRepository,
-        CollectorHealthService collectorHealthService)
+        CollectorHealthService collectorHealthService,
+        Agent.Storage.Data.Database database)
     {
         _deviceIdentityService = deviceIdentityService;
         _eventRepository = eventRepository;
         _diagnosticsRepository = diagnosticsRepository;
         _collectorHealthService = collectorHealthService;
+        _database = database;
     }
 
     public HealthStatus GetHealth()
@@ -45,7 +48,7 @@ public class HealthService
             LastCollectionUtc =
                 lastCollection ?? DateTime.MinValue,
             CollectorCount = _collectorHealthService.GetAll().Count,
-            DatabaseHealthy = true,
+            DatabaseHealthy = _database.CanConnect(),
               Collectors = _collectorHealthService.GetAll()
         };
     }
