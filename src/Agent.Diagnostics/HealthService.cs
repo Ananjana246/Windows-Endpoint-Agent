@@ -39,16 +39,20 @@ public class HealthService
         var lastCollection =
             _diagnosticsRepository.GetLastCollection();
 
+        var databaseHealthy = _database.CanConnect();
+        var staleThreshold = TimeSpan.FromSeconds(60);
+        var collectionHealthy = lastCollection.HasValue && DateTime.UtcNow - lastCollection.Value <= staleThreshold;
+
         return new HealthStatus
         {
-            Status = "RUNNING",
+            Status = (!databaseHealthy ? "DEGRADED" : collectionHealthy ? "RUNNING" : "STALE"),
             DeviceId = deviceId,
             TotalEvents = allEvents.Count,
             ReadyEvents = readyEvents.Count,
             LastCollectionUtc =
                 lastCollection ?? DateTime.MinValue,
             CollectorCount = _collectorHealthService.GetAll().Count,
-            DatabaseHealthy = _database.CanConnect(),
+            DatabaseHealthy = databaseHealthy,
               Collectors = _collectorHealthService.GetAll()
         };
     }
