@@ -137,10 +137,16 @@
         }
 
         .collector-row span:last-child {
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #e5e7eb;            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            font-weight: 600;
         }
+
+        .collector-status-running { background: #dcfce7; color: #166534; }
+        .collector-status-failed { background: #fee2e2; color: #991b1b; }
+        .collector-status-disabled { background: #f3f4f6; color: #4b5563; }
+        .collector-status-stale { background: #ffedd5; color: #9a3412; }
 </style>
 </head>
 
@@ -263,7 +269,12 @@
                     health.collectorCount;
 
                 const collectorHealth = document.getElementById('collectorHealth');
-                collectorHealth.innerHTML = health.collectors.map(collector => ).join('');
+                collectorHealth.innerHTML = health.collectors.map(collector => `
+                    <div class="collector-row">
+                        <span>${collector.name}</span>
+                        <span class="collector-status-${collector.enabled ? collector.status.toLowerCase() : 'disabled'}">${collector.enabled ? collector.status : 'DISABLED'}</span>
+                    </div>
+                `).join('');
 
                 document.getElementById('databaseHealthy').textContent =
                     health.databaseHealthy
