@@ -91,6 +91,13 @@
             margin-bottom: 8px;
         }
 
+        .event-count {
+            margin-left: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
         .event-type {
             font-weight: bold;
         }
@@ -147,6 +154,13 @@
         .collector-status-failed { background: #fee2e2; color: #991b1b; }
         .collector-status-disabled { background: #f3f4f6; color: #4b5563; }
         .collector-status-stale { background: #ffedd5; color: #9a3412; }
+
+        .event-count {
+            margin-left: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+        }
 
         .event-type {
             display: inline-block;
@@ -207,7 +221,10 @@
         <div class="empty">Loading collector health...</div>
     </div>
 
-    <h2>Live Event Feed</h2>
+    <h2>
+        Live Event Feed
+        <span id="eventCount" class="event-count">Showing 0 events</span>
+    </h2>
 
     <div id="events" class="events">
         <div class="empty">Loading events...</div>
@@ -318,6 +335,8 @@
                 }
 
                 const events = await response.json();
+                document.getElementById('eventCount').textContent =
+                    `Showing ${events.length} events`;
 
                 const container =
                     document.getElementById('events');
