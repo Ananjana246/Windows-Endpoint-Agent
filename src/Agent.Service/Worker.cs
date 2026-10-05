@@ -19,7 +19,7 @@ public class Worker : BackgroundService
     private readonly DeviceIdentityService _deviceIdentityService;
     private readonly DiagnosticsRepository _diagnosticsRepository;
     private readonly CollectorHealthService _collectorHealthService;
-    
+
 
     private readonly Dictionary<string, DateTime> _seenEvents = new();
 
@@ -38,7 +38,7 @@ public class Worker : BackgroundService
         _configuration = configuration.Value;
         _collectors = collectors;
         _normalizer = normalizer;
-        _eventRepository = eventRepository;   
+        _eventRepository = eventRepository;
         _queueProcessor = queueProcessor;
         _deviceIdentityService = deviceIdentityService;
         _diagnosticsRepository = diagnosticsRepository;
@@ -62,84 +62,95 @@ public class Worker : BackgroundService
 
         _queueProcessor.PrepareLocalEvents();
 
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            _logger.LogInformation(
-                "Endpoint Agent worker running at: {time}",
-                DateTimeOffset.Now);
-
-            foreach (var collector in _collectors)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                if (!IsCollectorEnabled(collector))
-                {
-                    _logger.LogInformation("Collector disabled by configuration: {Collector}", collector.GetType().Name);
-                    _collectorHealthService.MarkDisabled(collector.GetType().Name);
-                    continue;
-                }
+                _logger.LogInformation(
+                    "Endpoint Agent worker running at: {time}",
+                    DateTimeOffset.Now);
 
-                try
+                foreach (var collector in _collectors)
                 {
-                    var events = await collector.CollectAsync(stoppingToken);
-                    _collectorHealthService.MarkSuccess(collector.GetType().Name);
-
-                    foreach (var agentEvent in events)
+                    if (!IsCollectorEnabled(collector))
                     {
-                        var normalizedEvent =
-                            _normalizer.Normalize(agentEvent);
-                        normalizedEvent.DeviceId = deviceId;
+                        _logger.LogInformation("Collector disabled by configuration: {Collector}", collector.GetType().Name);
+                        _collectorHealthService.MarkDisabled(collector.GetType().Name);
+                        continue;
+                    }
 
-                        var deduplicationKey =
-                            _normalizer.CreateDeduplicationKey(
-                                normalizedEvent);
+                    try
+                    {
+                        var events = await collector.CollectAsync(stoppingToken);
+                        _collectorHealthService.MarkSuccess(collector.GetType().Name);
 
-                        var now = DateTime.UtcNow;
-
-                        if (_seenEvents.TryGetValue(
-                                deduplicationKey,
-                                out var previousTime))
+                        foreach (var agentEvent in events)
                         {
-                            if ((now - previousTime).TotalSeconds < 60)
+                            var normalizedEvent =
+                                _normalizer.Normalize(agentEvent);
+                            normalizedEvent.DeviceId = deviceId;
+
+                            var deduplicationKey =
+                                _normalizer.CreateDeduplicationKey(
+                                    normalizedEvent);
+
+                            var now = DateTime.UtcNow;
+
+                            if (_seenEvents.TryGetValue(
+                                    deduplicationKey,
+                                    out var previousTime))
                             {
-                                _logger.LogDebug(
-                                    "Duplicate event ignored: {EventType} from {Source}",
-                                    normalizedEvent.EventType,
-                                    normalizedEvent.Source);
+                                if ((now - previousTime).TotalSeconds < 60)
+                                {
+                                    _logger.LogDebug(
+                                        "Duplicate event ignored: {EventType} from {Source}",
+                                        normalizedEvent.EventType,
+                                        normalizedEvent.Source);
 
-                                continue;
+                                    continue;
+                                }
                             }
+
+                            _seenEvents[deduplicationKey] = now;
+                            _eventRepository.Save(normalizedEvent);
+
+                            _eventRepository.UpdateStatus(
+                                normalizedEvent.EventId,
+                                DeliveryStatus.Ready);
+
+                            _logger.LogInformation(
+                                "Saved event: {EventType} from {Source} with status READY",
+                                normalizedEvent.EventType,
+                                normalizedEvent.Source);
                         }
-
-                        _seenEvents[deduplicationKey] = now;
-                        _eventRepository.Save(normalizedEvent);
-
-_eventRepository.UpdateStatus(
-    normalizedEvent.EventId,
-    DeliveryStatus.Ready);
-
-_logger.LogInformation(
-    "Saved event: {EventType} from {Source} with status READY",
-    normalizedEvent.EventType,
-    normalizedEvent.Source);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error while running collector: {Collector}",
+                            collector.GetType().Name);
+                        _collectorHealthService.MarkFailure(collector.GetType().Name);
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Error while running collector: {Collector}",
-                        collector.GetType().Name);
-                    _collectorHealthService.MarkFailure(collector.GetType().Name);
-                }
+
+
+
+                _diagnosticsRepository.UpdateLastCollection(DateTime.UtcNow);
+
+                await Task.Delay(
+                    TimeSpan.FromSeconds(
+                        _configuration.CollectionIntervalSeconds),
+                    stoppingToken);
             }
-
-
-
-            _diagnosticsRepository.UpdateLastCollection(DateTime.UtcNow);
-
-            await Task.Delay(
-                TimeSpan.FromSeconds(
-                    _configuration.CollectionIntervalSeconds),
-                stoppingToken);
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("Endpoint Agent shutdown requested.");
+        }
+        finally
+        {
+            _logger.LogInformation("Endpoint Agent worker stopped.");
         }
     }
 
@@ -154,4 +165,4 @@ _logger.LogInformation(
         };
     }
 
-    }
+}
