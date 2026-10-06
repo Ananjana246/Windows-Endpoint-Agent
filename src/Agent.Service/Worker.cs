@@ -4,6 +4,7 @@ using Agent.Core.Services;
 using Microsoft.Extensions.Options;
 using Agent.Storage.Repositories;
 using Agent.Core.Enums;
+using Agent.Core.Models;
 using Agent.Diagnostics;
 
 namespace Agent.Service;
@@ -59,6 +60,8 @@ public class Worker : BackgroundService
         _logger.LogInformation(
             "Endpoint Device ID: {DeviceId}",
             deviceId);
+
+        SaveLifecycleEvent(EventType.AgentStarted, deviceId);
 
         _queueProcessor.PrepareLocalEvents();
 
@@ -150,8 +153,26 @@ public class Worker : BackgroundService
         }
         finally
         {
+            SaveLifecycleEvent(EventType.AgentStopped, deviceId);
             _logger.LogInformation("Endpoint Agent worker stopped.");
         }
+    }
+
+    private void SaveLifecycleEvent(EventType eventType, string deviceId)
+    {
+        var lifecycleEvent = new AgentEvent
+        {
+            EventId = Guid.NewGuid(),
+            TimestampUtc = DateTime.UtcNow,
+            DeviceId = deviceId,
+            UserId = string.Empty,
+            EventType = eventType,
+            Source = "Worker",
+            Data = $"Endpoint Agent {eventType}",
+            DeliveryStatus = DeliveryStatus.Ready
+        };
+
+        _eventRepository.Save(lifecycleEvent);
     }
 
     private bool IsCollectorEnabled(ICollector collector)
