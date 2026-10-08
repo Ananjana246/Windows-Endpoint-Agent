@@ -6,6 +6,7 @@ using Agent.Core.Services;
 
 namespace Agent.Storage.Repositories;
 
+/// Handles local SQLite persistence for agent events.
 public class EventRepository : IEventQueue
 {
     private readonly Database _database;
