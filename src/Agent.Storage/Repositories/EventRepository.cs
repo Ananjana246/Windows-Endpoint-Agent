@@ -16,6 +16,7 @@ public class EventRepository : IEventQueue
         _database = database;
     }
 
+    /// <summary>Saves an agent event to the local SQLite database.</summary>
     public void Save(AgentEvent agentEvent)
     {
         using var connection = _database.CreateConnection();
