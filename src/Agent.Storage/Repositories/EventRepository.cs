@@ -84,6 +84,7 @@ public class EventRepository : IEventQueue
         command.ExecuteNonQuery();
     }
 
+    /// <summary>Retrieves all agent events stored in the local database.</summary>
     public List<AgentEvent> GetAll()
     {
         var events = new List<AgentEvent>();
