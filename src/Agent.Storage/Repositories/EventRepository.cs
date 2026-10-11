@@ -130,6 +130,7 @@ public class EventRepository : IEventQueue
 
         return events;
     }
+/// <summary>Retrieves agent events matching the specified delivery status.</summary>
 public List<AgentEvent> GetByStatus(DeliveryStatus status)
 {
     var events = new List<AgentEvent>();
