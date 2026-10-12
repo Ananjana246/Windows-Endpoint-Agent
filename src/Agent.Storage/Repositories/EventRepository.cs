@@ -182,6 +182,7 @@ public List<AgentEvent> GetByStatus(DeliveryStatus status)
     return events;
 }
 
+/// <summary>Updates the delivery status of an agent event.</summary>
 public void UpdateStatus(
     Guid eventId,
     DeliveryStatus status)
