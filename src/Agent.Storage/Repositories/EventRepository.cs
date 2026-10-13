@@ -11,6 +11,7 @@ public class EventRepository : IEventQueue
 {
     private readonly Database _database;
 
+    /// <summary>Initializes the event repository with the database.</summary>
     public EventRepository(Database database)
     {
         _database = database;
