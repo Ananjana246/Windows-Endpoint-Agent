@@ -108,4 +108,31 @@ public class EventRepositoryUpdateStatusTests
             }
         }
     }
+    [Fact]
+    public void GetByStatus_ShouldReturnEmptyListWhenNoEventsMatch()
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"event-empty-status-{Guid.NewGuid()}.db");
+
+        try
+        {
+            var database = new Database(databasePath);
+            new DatabaseInitializer(database).Initialize();
+
+            var repository = new EventRepository(database);
+
+            var result = repository.GetByStatus(DeliveryStatus.Failed);
+
+            Assert.Empty(result);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }
