@@ -135,4 +135,49 @@ public class EventRepositoryUpdateStatusTests
         }
     }
 
+    [Fact]
+    public void UpdateStatus_ShouldNotModifyEventsWhenEventIdDoesNotExist()
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"event-missing-status-{Guid.NewGuid()}.db");
+
+        try
+        {
+            var database = new Database(databasePath);
+            new DatabaseInitializer(database).Initialize();
+
+            var repository = new EventRepository(database);
+
+            var agentEvent = new AgentEvent
+            {
+                EventId = Guid.NewGuid(),
+                TimestampUtc = DateTime.UtcNow,
+                DeviceId = "test-device",
+                UserId = "test-user",
+                EventType = EventType.AgentStarted,
+                Source = "EventRepositoryTests",
+                Data = "{}",
+                DeliveryStatus = DeliveryStatus.Local
+            };
+
+            repository.Save(agentEvent);
+            repository.UpdateStatus(
+                Guid.NewGuid(),
+                DeliveryStatus.Processed);
+
+            var storedEvent = Assert.Single(repository.GetAll());
+
+            Assert.Equal(agentEvent.EventId, storedEvent.EventId);
+            Assert.Equal(DeliveryStatus.Local, storedEvent.DeliveryStatus);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }
