@@ -128,4 +128,31 @@ public class CollectorHealthRepositoryTests
             File.Delete(databasePath);
         }
     }
+    [Fact]
+    public void GetAll_ShouldReturnEmptyListWhenNoCollectorsExist()
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"collector-health-empty-{Guid.NewGuid()}.db");
+
+        try
+        {
+            var database = new Database(databasePath);
+            new DatabaseInitializer(database).Initialize();
+
+            var repository = new CollectorHealthRepository(database);
+
+            var result = repository.GetAll();
+
+            Assert.Empty(result);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }
