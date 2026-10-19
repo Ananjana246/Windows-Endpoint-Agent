@@ -25,6 +25,34 @@ public class AgentIdentityTests
 
         File.Delete(identityFilePath);
     }
+
+    [Fact]
+    public void GetDeviceId_ShouldPersistAcrossInstances()
+    {
+        var identityFilePath = Path.Combine(
+            Path.GetTempPath(),
+            $"agent-identity-persist-{Guid.NewGuid()}.txt");
+
+        try
+        {
+            var firstIdentity = new AgentIdentity(identityFilePath);
+            var firstId = firstIdentity.GetDeviceId();
+
+            var secondIdentity = new AgentIdentity(identityFilePath);
+            var secondId = secondIdentity.GetDeviceId();
+
+            Assert.False(string.IsNullOrWhiteSpace(firstId));
+            Assert.Equal(firstId, secondId);
+        }
+        finally
+        {
+            if (File.Exists(identityFilePath))
+            {
+                File.Delete(identityFilePath);
+            }
+        }
+    }
+
 }
 
 public class EventRepositoryTests
