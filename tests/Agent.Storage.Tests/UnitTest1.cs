@@ -53,6 +53,38 @@ public class AgentIdentityTests
         }
     }
 
+
+    [Fact]
+    public void GetDeviceId_ShouldCreateMissingParentDirectory()
+    {
+        var directoryPath = Path.Combine(
+            Path.GetTempPath(),
+            $"agent-identity-dir-{Guid.NewGuid()}");
+
+        var identityFilePath = Path.Combine(
+            directoryPath,
+            "nested",
+            "device-id.txt");
+
+        try
+        {
+            var identity = new AgentIdentity(identityFilePath);
+
+            var deviceId = identity.GetDeviceId();
+
+            Assert.False(string.IsNullOrWhiteSpace(deviceId));
+            Assert.True(File.Exists(identityFilePath));
+            Assert.Equal(deviceId, File.ReadAllText(identityFilePath));
+        }
+        finally
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, recursive: true);
+            }
+        }
+    }
+
 }
 
 public class EventRepositoryTests
