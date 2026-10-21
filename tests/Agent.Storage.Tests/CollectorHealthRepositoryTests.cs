@@ -155,4 +155,47 @@ public class CollectorHealthRepositoryTests
         }
     }
 
+    [Fact]
+    public void GetAll_ShouldReturnCollectorsInAlphabeticalOrder()
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"collector-health-order-{Guid.NewGuid()}.db");
+
+        try
+        {
+            var database = new Database(databasePath);
+            new DatabaseInitializer(database).Initialize();
+
+            var repository = new CollectorHealthRepository(database);
+
+            repository.Upsert(new CollectorHealth
+            {
+                Name = "ProcessCollector",
+                Enabled = true,
+                Status = "RUNNING"
+            });
+
+            repository.Upsert(new CollectorHealth
+            {
+                Name = "FileCollector",
+                Enabled = true,
+                Status = "RUNNING"
+            });
+
+            var result = repository.GetAll();
+
+            Assert.Equal(
+                new[] { "FileCollector", "ProcessCollector" },
+                result.Select(x => x.Name).ToArray());
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }
