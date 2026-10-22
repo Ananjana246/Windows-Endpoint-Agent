@@ -198,4 +198,46 @@ public class CollectorHealthRepositoryTests
         }
     }
 
+    [Fact]
+    public void GetAll_ShouldReturnNullForInvalidLastSuccessTimestamp()
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"collector-health-invalid-{Guid.NewGuid()}.db");
+
+        try
+        {
+            var database = new Database(databasePath);
+            new DatabaseInitializer(database).Initialize();
+
+            using (var connection = database.CreateConnection())
+            {
+                connection.Open();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = """
+                    INSERT INTO collector_health
+                        (name, enabled, status, last_success_utc)
+                    VALUES
+                        ('ProcessCollector', 1, 'RUNNING', 'invalid-timestamp');
+                    """;
+
+                command.ExecuteNonQuery();
+            }
+
+            var repository = new CollectorHealthRepository(database);
+            var result = repository.GetAll();
+
+            Assert.Single(result);
+            Assert.Equal("ProcessCollector", result[0].Name);
+            Assert.Null(result[0].LastSuccessUtc);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
 }
