@@ -179,5 +179,60 @@ public class EventRepositoryUpdateStatusTests
             }
         }
     }
+[Fact]
+public void GetAll_ShouldReturnEventsInTimestampOrder()
+{
+    var databasePath = Path.Combine(
+        Path.GetTempPath(),
+        $"event-order-{Guid.NewGuid()}.db");
 
+    try
+    {
+        var database = new Database(databasePath);
+        new DatabaseInitializer(database).Initialize();
+
+        var repository = new EventRepository(database);
+        var baseTime = DateTime.UtcNow;
+
+        var laterEvent = new AgentEvent
+        {
+            EventId = Guid.NewGuid(),
+            TimestampUtc = baseTime.AddMinutes(2),
+            DeviceId = "test-device",
+            UserId = "test-user",
+            EventType = EventType.AgentError,
+            Source = "EventRepositoryTests",
+            Data = "{}",
+            DeliveryStatus = DeliveryStatus.Local
+        };
+
+        var earlierEvent = new AgentEvent
+        {
+            EventId = Guid.NewGuid(),
+            TimestampUtc = baseTime,
+            DeviceId = "test-device",
+            UserId = "test-user",
+            EventType = EventType.AgentStarted,
+            Source = "EventRepositoryTests",
+            Data = "{}",
+            DeliveryStatus = DeliveryStatus.Local
+        };
+
+        repository.Save(laterEvent);
+        repository.Save(earlierEvent);
+
+        var result = repository.GetAll();
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(earlierEvent.EventId, result[0].EventId);
+        Assert.Equal(laterEvent.EventId, result[1].EventId);
+    }
+    finally
+    {
+        if (File.Exists(databasePath))
+        {
+            File.Delete(databasePath);
+        }
+    }
+}
 }
